@@ -212,28 +212,27 @@
 
             $.getJSON(receipts_restful_api, function (receipts) {
                 for (var idx = 0; idx < receipts.length; idx++) {
-                    //console.log("receipts[idx].image " + receipts[idx].image);
+
 
                     if (receipts[idx].image != null) {
                         let myImage = new Image();
                         myImage.src = "data:image/png;base64," + receipts[idx].image;
                         const canvasTemp = document.createElement('canvas');
                         canvasTemp.id = "created" + Date.now().toString() + "populate";
-//                        canvasTemp.width = 200;
-//                        canvasTemp.height)
+
                         let ctx = canvasTemp.getContext('2d');
                         myImage.onload = function() {
                             console.log("Drawing image " + canvasTemp.id);
                             canvasTemp.width = myImage.width;
                             canvasTemp.height = myImage.height;
-                            //console.log(myImage)
+
                             ctx.drawImage(myImage, 0, 0);
                         }
                         myImage.onerror = function(err) {
                             console.log("Something went wrong!" + err);
                         }
                         console.log("Created canvas " + canvasTemp.id);
-                        //$('BODY').append(canvas1);
+
                         addRow(receipts[idx], canvasTemp);
 
                     } else {
@@ -332,7 +331,6 @@
 
             function attachMediaStream(mediaStream) {
                 $('video')[0].srcObject = mediaStream;
-                // Saving the track allows us to capture a photo
                 track = mediaStream.getVideoTracks()[0];
                 imageCapture = new ImageCapture(track);
             }
@@ -350,7 +348,6 @@
             }
 
             function takeSnapshot() {
-                // create a CANVAS element that is same size as the image
                 canvasId = Date.now().toString();
                 imageCapture.grabFrame()
                     .then(img => {
@@ -363,7 +360,6 @@
                 canvas3.id = "created" + canvasId.toString() + "end";
                 canvas.getContext('2d').drawImage(img, 0, 0);
                 const base64EncodedImageData = canvas.toDataURL('image/png').split(',')[1];
-                ///console.log("base64EncodedImageData 1  " + base64EncodedImageData);
                 const imgVar = img;
                 $.ajax({
                     url: images_restful_api,
@@ -460,10 +456,10 @@
 
                 console.info("receipt.merchant " + receipt.merchant);
                 console.info("canvas" + canvas);
-                //$('BODY').append(canvas);
 
-                $(`<div class="receipt"><span class="time">${timeSince(receipt.time)}</span><span class="merchant">${receipt.merchant}</span><span class="amount">${parseFloat(receipt.amount).toFixed(2)}</span><span class="tags">${tagBlob}<div id="${receipt.id}" class="add-tag">Add +</div></span></div>`).append(canvas)
-                //$(`<div class="receipt"><span class="time">${timeSince(receipt.time)}</span><span class="merchant">${receipt.merchant}</span><span class="amount">${parseFloat(receipt.amount).toFixed(2)}</span><span class="tags">${tagBlob}<div id="${receipt.id}" class="add-tag">Add +</div></span><span class="snap">${canvas}</span></div>`)
+
+                $(`<div class="receipt"><span class="time">${new Date().toDateString()}</span><span class="merchant">${receipt.merchant}</span><span class="amount">${parseFloat(receipt.amount).toFixed(2)}</span><span class="tags">${tagBlob}<div id="${receipt.id}" class="add-tag">Add +</div></span></div>`).append(canvas)
+
                     .appendTo($("#receiptList"));
 
 
