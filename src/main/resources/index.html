@@ -6,8 +6,8 @@
     <style>
 
         H1 {
-            float: left;
-            font-family: Helvetica, Arial
+            float: right;
+            font-family: Helvetica
         }
         #receiptList {
             clear: both;
@@ -17,7 +17,6 @@
             background-color: cornflowerblue;
             width: 100%;
         }
-
         .receipt span {
             margin: -1px;
             padding: 6px;
@@ -25,31 +24,28 @@
             width: 80px;
             display: inline-block;
         }
-
         .table-top {
             background-color: deepskyblue;
             width: 100%;
         }
-
         .table-top span {
             margin: -1px;
-            padding: 6px;
+
             text-align: center;
             width: 80px;
             display: inline-block;
         }
-
         .add-tag {
             text-align: center;
-            border-radius: 50px;
+
             border: 1px solid black;
             cursor: pointer;
-            vertical-align: middle;
-            width: 100px;
+
+            width: 10px;
             color: white;
             height: 30px;
             display: inline-table;
-            line-height: 30px;
+
             vertical-align: middle;
             background-color: deepskyblue;
         }
@@ -63,9 +59,9 @@
         }
 
         #input-amount-ui {
-            margin-top: -4px;
-            margin-bottom: 15px;
-            width: 408px;
+            margin-top: 5px;
+            margin-bottom: 33px;
+            width: 400px;
             border: 1px solid black;
             position: relative;
             display: none;
@@ -73,18 +69,17 @@
         }
         #input-amount-ui input {
             margin-bottom: 10px;
-            margin-left: 22px;
+
             padding-left: 10px;
             border: 1px solid black;
             font-size: 20px;
-            height: 30px;
             width: 88%;
             color: white;
             background: inherit;
         }
 
         #camera-ui {
-            margin-top: -4px;
+            margin-top: 5px;
             margin-bottom: 15px;
             width: 408px;
             border: 1px solid black;
@@ -93,12 +88,10 @@
             background: deepskyblue;
         }
         #camera-ui input {
-            margin-bottom: 10px;
-            margin-left: 22px;
-            padding-left: 10px;
+            margin-bottom: 1px;
+
             border: 1px solid black;
             font-size: 20px;
-            height: 30px;
             width: 88%;
             color: white;
             background: inherit;
@@ -111,59 +104,38 @@
         }
         #add-receipt {
             display: inline-block;
-            cursor: pointer;
             text-align: center;
             border: 1px solid black;
             border-radius: 5px;
-            width: 100px;
-            height: 30px;
+            width: 30px;
             vertical-align: middle;
-            font-size: 30px;
-            font-weight: bold;
             color: white;
             background-color: dodgerblue;
         }
 
         #start-camera {
             display: inline-block;
-            cursor: pointer;
-            text-align: center;
             border: 1px solid black;
             border-radius: 5px;
-            width: 100px;
-            height: 30px;
             vertical-align: middle;
-            font-size: 30px;
-            font-weight: bold;
             color: white;
             background-color: lightskyblue;
         }
 
         #save-receipt {
             text-align: center;
-            font-size: 24px;
-            cursor: pointer;
-            width: 100px;
-            height: 30px;
+
             vertical-align: middle;
             border-radius: 5px;
-            display: inline-table;
-            line-height: 50px;
             border: 1px solid black;
             color: white;
-            background-color: orange;
+            background-color: lightgreen;
         }
 
         #cancel-receipt {
             text-align: center;
             border: 1px solid black;
-            font-size: 24px;
-            display: inline-table;
-            cursor: pointer;
-            line-height: 50px;
             vertical-align: middle;
-            width: 100px;
-            height: 30px;
             border-radius: 5px;
             color: white;
             background-color: red;
@@ -171,13 +143,8 @@
 
         #take-pic {
             text-align: center;
-            font-size: 24px;
-            cursor: pointer;
-            width: 100px;
-            height: 30px;
             vertical-align: middle;
             border-radius: 5px;
-            display: inline-table;
             line-height: 50px;
             border: 1px solid black;
             color: white;
@@ -187,13 +154,7 @@
         #take-pic-cancel {
             text-align: center;
             border: 1px solid black;
-            font-size: 24px;
-            display: inline-table;
-            cursor: pointer;
             line-height: 50px;
-            vertical-align: middle;
-            width: 100px;
-            height: 30px;
             border-radius: 5px;
             color: white;
             background-color: darkblue;
@@ -207,23 +168,22 @@
             display: inline-table;
             vertical-align: middle;
             line-height: 20px;
-            width: 100px;
-            height: 30px;
             cursor: pointer;
             color: white;
             background-color: darkblue;
         }
 
         video {
-            width: 300px;
-            height: 300px;
+            width: 400px;
+            height: 400px;
             border: 1px solid black;
         }
 
         #vidwrap {
             margin: 20px 0;
         }
-        
+
+
 
     </style>
 
@@ -378,8 +338,8 @@
                     .then(attachMediaStream)
                     .catch(error => {
                     console.log('you are fooked');
-                    })
-                    })
+            })
+            })
             }
 
             function takeSnapshot() {
@@ -409,7 +369,7 @@
                         renderRecommendation(receiptinfo, this.indexValue.param1, this.indexValue.param2, this.indexValue.param3);
                     },
                 })
-            .always(() => console.log('request complete'));
+                    .always(() => console.log('request complete'));
             });
             }
 
