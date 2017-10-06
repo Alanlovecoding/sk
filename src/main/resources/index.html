@@ -198,22 +198,19 @@
 
         $(function () {
             const api = "http://localhost:8080";
-
-            const images_restful_api = api + "/images";
-            const application_json = "application/json";
             const receipts_restful_api = api + "/receipts";
             const tags_restful_api = api + "/tags";
             const tag_x_removal = " x";
             let imageCapture;
             let track;
+            let canvasToAppend;
+            const images_restful_api = api + "/images";
+            const application_json = "application/json";
             var boundingBox;
             var canvasId;
-            let canvasToAppend;
 
             $.getJSON(receipts_restful_api, function (receipts) {
                 for (var idx = 0; idx < receipts.length; idx++) {
-
-
                     if (receipts[idx].image != null) {
                         let myImage = new Image();
                         myImage.src = "data:image/png;base64," + receipts[idx].image;
@@ -253,18 +250,13 @@
 
             $('#save-receipt').on('click', function () {
                 console.info("save-receipt ");
-
                 const myCanvas = document.getElementById("my-canvas");
-
                 canvasId = "";
                 base64EncodedImageData = null
                 if (canvasToAppend != null) {
                     base64EncodedImageData = canvasToAppend.toDataURL('image/png').split(',')[1];
                 }
-
-
                 myCanvas.getContext('2d').clearRect(0, 0, myCanvas.width, myCanvas.height);
-
                 var input_json = {
                     merchant: $('#merchant').val(),
                     amount: $('#amount').val(),
@@ -291,6 +283,17 @@
                 });
             });
 
+            function disconnectVideo() {
+                $('video')[0].srcObject = null;
+                imageCapture = null;
+            }
+
+            $('#take-pic-cancel').on('click', function () {
+                console.info("take-pic-cancel ");
+                $('#camera-ui').hide();
+                disconnectVideo();
+                canvasId = "";
+            });
             $('#cancel-receipt').on('click', function () {
                 console.info("cancel-receipt ");
                 $('#merchant').val('');
@@ -299,17 +302,7 @@
                 canvasId = ";"
             });
 
-            $('#take-pic-cancel').on('click', function () {
-                console.info("take-pic-cancel ");
-                $('#camera-ui').hide();
-                disconnectVideo();
-                canvasId = "";
-            });
 
-            function disconnectVideo() {
-                $('video')[0].srcObject = null;
-                imageCapture = null;
-            }
 
             $.put = function(url, data, callback, type){
                 if ( $.isFunction(data) ){
@@ -328,13 +321,12 @@
                     }
                 });
             };
-
-            function attachMediaStream(mediaStream) {
-                $('video')[0].srcObject = mediaStream;
-                track = mediaStream.getVideoTracks()[0];
-                imageCapture = new ImageCapture(track);
+            function removeTag(receiptId, tag) {
+                console.info("removeTag " + tag);
+                $.put(tags_restful_api + "/" + tag.innerText.slice(0, -tag_x_removal.length), receiptId, function() {
+                    tag.remove();
+                }, application_json);
             }
-
             function startVideo() {
                 navigator.mediaDevices.getUserMedia({video: {facingMode: {exact: "environment"}}})
                     .then(attachMediaStream)
@@ -346,7 +338,11 @@
             })
             })
             }
-
+            function attachMediaStream(mediaStream) {
+                $('video')[0].srcObject = mediaStream;
+                track = mediaStream.getVideoTracks()[0];
+                imageCapture = new ImageCapture(track);
+            }
             function takeSnapshot() {
                 canvasId = Date.now().toString();
                 imageCapture.grabFrame()
@@ -382,21 +378,23 @@
                 $('#amount').val(receiptinfo.amount);
                 $('#input-amount-ui').show();
                 boundingBox = receiptinfo.boundingBox;
-
-
                 canvas2.getContext('2d').clearRect(0, 0, canvas2.width, canvas2.height);
                 canvas2.width = receiptinfo.boundingBox[2]
                 canvas2.height = receiptinfo.boundingBox[3]
                 canvas2.getContext('2d').drawImage(img,receiptinfo.boundingBox[0],receiptinfo.boundingBox[1],receiptinfo.boundingBox[2],receiptinfo.boundingBox[3],0,0,receiptinfo.boundingBox[2],receiptinfo.boundingBox[3]);
-
-
                 canvas3.width = receiptinfo.boundingBox[2]
                 canvas3.height = receiptinfo.boundingBox[3]
                 canvas3.getContext('2d').drawImage(img,receiptinfo.boundingBox[0],receiptinfo.boundingBox[1],receiptinfo.boundingBox[2],receiptinfo.boundingBox[3],0,0,receiptinfo.boundingBox[2],receiptinfo.boundingBox[3]);
-
                 canvasToAppend = canvas3;
 
             }
+
+            function putTag(receipt, possibleTag, tagCount) {
+                $.put(tags_restful_api + "/" + possibleTag.val(), receipt.id, storeNewTag(receipt, tagCount, possibleTag) , application_json);
+            }
+
+
+
 
             function addRow(receipt, canvas) {
                 var tagCount = receipt.tags.length;
@@ -432,19 +430,6 @@
                 })
             }
 
-            function putTag(receipt, possibleTag, tagCount) {
-                $.put(tags_restful_api + "/" + possibleTag.val(), receipt.id, storeNewTag(receipt, tagCount, possibleTag) , application_json);
-            }
-
-            function storeNewTag(receipt, tagCount, possibleTag) {
-                var addBlob = $(`<div id="${receipt.id + "sep" + (tagCount - 1)}" class="tagValue">${possibleTag.val()}${tag_x_removal}</div>`);
-                addBlob.insertBefore(possibleTag);
-                addBlob.on('click', function () {
-                    removeTag(receipt.id, this);
-                });
-                possibleTag.remove();
-            }
-
             function manageTagsAndDivs(receipt, tagCount, canvas) {
                 var tagBlob = "";
                 var tagCount = receipt.tags.length;
@@ -453,45 +438,18 @@
                         tagBlob += `<div id="${receipt.id + "sep" + idx}" class="tagValue">${receipt.tags[idx]}${tag_x_removal}</div>`;
                     }
                 }
-
                 console.info("receipt.merchant " + receipt.merchant);
                 console.info("canvas" + canvas);
-
-
                 $(`<div class="receipt"><span class="time">${new Date().toDateString()}</span><span class="merchant">${receipt.merchant}</span><span class="amount">${parseFloat(receipt.amount).toFixed(2)}</span><span class="tags">${tagBlob}<div id="${receipt.id}" class="add-tag">Add +</div></span></div>`).append(canvas)
-
                     .appendTo($("#receiptList"));
-
-
             }
-
-            function removeTag(receiptId, tag) {
-                console.info("removeTag " + tag);
-                $.put(tags_restful_api + "/" + tag.innerText.slice(0, -tag_x_removal.length), receiptId, function() {
-                    tag.remove();
-                }, application_json);
-            }
-
-            function timeSince(timeStamp) {
-                var now = new Date();
-                var secondsPast = (now.getTime() - timeStamp) / 1000;
-                var ago = " ago";
-                if(secondsPast < 60){
-                    return parseInt(secondsPast) + " s" + ago;
-                }
-                if(secondsPast < 3600){
-                    return parseInt(secondsPast/60) + " m"+ ago;
-                }
-                if(secondsPast <= 86400){
-                    return parseInt(secondsPast/3600) + " h"+ ago;
-                }
-                if(secondsPast > 86400){
-                    var formatTime = new Date(timeStamp);
-                    day = formatTime.getDate();
-                    month = formatTime.toDateString().match(/ [a-zA-Z]*/)[0].replace(" ","");
-                    year = formatTime.getFullYear() == now.getFullYear() ? "" :  " " + formatTime.getFullYear();
-                    return day + " " + month + year + ago;
-                }
+            function storeNewTag(receipt, tagCount, possibleTag) {
+                var addBlob = $(`<div id="${receipt.id + "sep" + (tagCount - 1)}" class="tagValue">${possibleTag.val()}${tag_x_removal}</div>`);
+                addBlob.insertBefore(possibleTag);
+                addBlob.on('click', function () {
+                    removeTag(receipt.id, this);
+                });
+                possibleTag.remove();
             }
 
             $(function () {
