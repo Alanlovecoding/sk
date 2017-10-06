@@ -10,6 +10,6 @@ public class NetIdController {
     @Path("/netid")
     @GET
     public String getNetId() {
-        return "ez256";
+        return "cw832";
     }
 }
