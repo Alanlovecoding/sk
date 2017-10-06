@@ -4,6 +4,7 @@
 <head>
     <script data-require="jquery@*" data-semver="3.1.1" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <style>
+
         H1 {
             float: left;
             font-family: Helvetica, Arial
@@ -13,7 +14,7 @@
             width: 400px;
         }
         .receipt {
-            background-color: lightpink;
+            background-color: cornflowerblue;
             width: 100%;
         }
 
@@ -26,7 +27,7 @@
         }
 
         .table-top {
-            background-color: lightpink;
+            background-color: deepskyblue;
             width: 100%;
         }
 
@@ -50,7 +51,7 @@
             display: inline-table;
             line-height: 30px;
             vertical-align: middle;
-            background-color: darkmagenta;
+            background-color: deepskyblue;
         }
 
         .tag_input {
@@ -68,7 +69,7 @@
             border: 1px solid black;
             position: relative;
             display: none;
-            background: darkmagenta;
+            background: lightblue;
         }
         #input-amount-ui input {
             margin-bottom: 10px;
@@ -89,7 +90,7 @@
             border: 1px solid black;
             position: relative;
             display: none;
-            background: darkmagenta;
+            background: deepskyblue;
         }
         #camera-ui input {
             margin-bottom: 10px;
@@ -120,7 +121,7 @@
             font-size: 30px;
             font-weight: bold;
             color: white;
-            background-color: darkmagenta;
+            background-color: dodgerblue;
         }
 
         #start-camera {
@@ -135,7 +136,7 @@
             font-size: 30px;
             font-weight: bold;
             color: white;
-            background-color: darkmagenta;
+            background-color: lightskyblue;
         }
 
         #save-receipt {
@@ -150,7 +151,7 @@
             line-height: 50px;
             border: 1px solid black;
             color: white;
-            background-color: deeppink;
+            background-color: orange;
         }
 
         #cancel-receipt {
@@ -165,7 +166,7 @@
             height: 30px;
             border-radius: 5px;
             color: white;
-            background-color: darkblue;
+            background-color: red;
         }
 
         #take-pic {
@@ -180,7 +181,7 @@
             line-height: 50px;
             border: 1px solid black;
             color: white;
-            background-color: deeppink;
+            background-color: mediumpurple;
         }
 
         #take-pic-cancel {
@@ -222,21 +223,19 @@
         #vidwrap {
             margin: 20px 0;
         }
+        
 
-        #start, #snapshot {
-            height: 3em;
-        }
     </style>
 
     <script>
-        // This is the idiomatic way to ensure that JQuery does not
-        // execute until the page has loaded
+
         $(function () {
             const api = "http://localhost:8080";
-            const receipts_restful_api = api + "/receipts";
-            const tags_restful_api = api + "/tags";
+
             const images_restful_api = api + "/images";
             const application_json = "application/json";
+            const receipts_restful_api = api + "/receipts";
+            const tags_restful_api = api + "/tags";
             const tag_x_removal = " x";
             let imageCapture;
             let track;
@@ -269,37 +268,10 @@
                         console.log("Created canvas " + canvasTemp.id);
                         //$('BODY').append(canvas1);
                         addRow(receipts[idx], canvasTemp);
-                        //canvas = canvasTemp;
-//                        var myImage = new Image();
-//                        myImage.src = "data:image/png;base64," + receipts[idx].image;
-//                        canvasTemp = document.createElement('canvas');
-//                        canvasTemp.id = "created" + Date.now().toString() + "populate";
-//                        var ctx = canvasTemp.getContext('2d');
-//                        myImage.onload = function() {
-//                            ctx.drawImage(myImage, 0, 0);
-//                        }
-//                        myImage.onerror = function(err) {
-//                            console.log("Something went wrong!" + err);
-//                        }
-//                        console.log("Created canvas " + canvasTemp.id);
-//                        addRow(receipts[idx], canvasTemp);
-//                        //canvas = canvasTemp;
+
                     } else {
                         addRow(receipts[idx]);
                     }
-
-//                    if (receipts[idx].image != null) {
-//                        var myImage = new Image();
-//                        myImage.src = receipts[idx].image;
-//
-//                        const canvasTemp = document.createElement('canvas');
-//                        canvasTemp.id = "created" + (Math.floor(Math.random() * 9 + 2)).toString() + "populate";
-//                        canvasTemp.getContext('2d').drawImage(myImage, 0, 0);
-//                        addRow(receipts[idx], canvasTemp);
-//                        //canvas = canvasTemp;
-//                    } else {
-//                        addRow(receipts[idx]);
-//                    }
                 }
             });
 
@@ -307,23 +279,23 @@
                 $('#camera-ui').hide();
                 $('#input-amount-ui').show();
             });
+
             $('#start-camera').on('click', function () {
                 $('#input-amount-ui').hide();
                 $('#camera-ui').show();
             });
+
             $('#save-receipt').on('click', function () {
                 console.info("save-receipt ");
 
                 const myCanvas = document.getElementById("my-canvas");
-                //console.log("created" + canvasId.toString() + "end");
-                //const canvas3 = document.getElementById("created" + canvasId.toString() + "end");
-                //console.log("canvasToAppend " + canvasToAppend);
+
                 canvasId = "";
                 base64EncodedImageData = null
                 if (canvasToAppend != null) {
                     base64EncodedImageData = canvasToAppend.toDataURL('image/png').split(',')[1];
                 }
-                //console.log("base64EncodedImageData " + base64EncodedImageData);
+
 
                 myCanvas.getContext('2d').clearRect(0, 0, myCanvas.width, myCanvas.height);
 
@@ -332,9 +304,6 @@
                     amount: $('#amount').val(),
                     base64EncodedImage: base64EncodedImageData
                 };
-
-
-                //canvasToAppend.getContext('2d').clearRect(0, 0, canvas2.width, canvas2.height);
                 $.ajax({
                     url: receipts_restful_api,
                     dataType: 'json',
@@ -347,7 +316,7 @@
                         addRow(receipt, this.indexValue.param1);
                         $('#merchant').val('');
                         $('#amount').val('');
-                        //this.indexValue.param1.getContext('2d').clearRect(0, 0, this.indexValue.param1.width, this.indexValue.param1.height);
+
                         $('#input-amount-ui').hide();
                     },
                     error: function (jqXhr, textStatus, errorThrown) {
@@ -412,6 +381,7 @@
                     })
                     })
             }
+
             function takeSnapshot() {
                 // create a CANVAS element that is same size as the image
                 canvasId = Date.now().toString();
@@ -439,17 +409,7 @@
                         renderRecommendation(receiptinfo, this.indexValue.param1, this.indexValue.param2, this.indexValue.param3);
                     },
                 })
-//                    .then(response => {
-//                    $('video').after(`<div>got response: <pre>${JSON.stringify(response)}</pre></div>`);
-//            })
             .always(() => console.log('request complete'));
-                // For debugging, you can uncomment this to see the frame that was captured
-
-                //var canvas1=document.createElement('canvas');
-                //canvas1.width=boundingBox[2];
-                //canvas1.height=boundingBox[3];
-                //canvas1.getContext('2d').drawImage(canvas, boundingBox[0],boundingBox[1], boundingBox[2], boundingBox[3]);
-                 //$('BODY').append(canvas1);
             });
             }
 
@@ -460,28 +420,24 @@
                 $('#input-amount-ui').show();
                 boundingBox = receiptinfo.boundingBox;
 
-                //canvas2.getContext('2d').drawImage(img, boundingBox[0],boundingBox[1], boundingBox[2], boundingBox[3]);
+
                 canvas2.getContext('2d').clearRect(0, 0, canvas2.width, canvas2.height);
                 canvas2.width = receiptinfo.boundingBox[2]
                 canvas2.height = receiptinfo.boundingBox[3]
                 canvas2.getContext('2d').drawImage(img,receiptinfo.boundingBox[0],receiptinfo.boundingBox[1],receiptinfo.boundingBox[2],receiptinfo.boundingBox[3],0,0,receiptinfo.boundingBox[2],receiptinfo.boundingBox[3]);
 
-                //canvas3.getContext('2d').clearRect(0, 0, canvas3.width, canvas3.height);
+
                 canvas3.width = receiptinfo.boundingBox[2]
                 canvas3.height = receiptinfo.boundingBox[3]
                 canvas3.getContext('2d').drawImage(img,receiptinfo.boundingBox[0],receiptinfo.boundingBox[1],receiptinfo.boundingBox[2],receiptinfo.boundingBox[3],0,0,receiptinfo.boundingBox[2],receiptinfo.boundingBox[3]);
 
                 canvasToAppend = canvas3;
-                //ctx1.getContext('2d').drawImage(canvas,receiptinfo.boundingBox[0],receiptinfo.boundingBox[1],receiptinfo.boundingBox[2],receiptinfo.boundingBox[3],0,0,receiptinfo.boundingBox[2],receiptinfo.boundingBox[3]);
 
-               // $('BODY').append(canvas2);
             }
 
             function addRow(receipt, canvas) {
                 var tagCount = receipt.tags.length;
-
                 manageTagsAndDivs(receipt, tagCount, canvas);
-
                 for (var idx = 0; idx < tagCount; idx++) {
                     var tag = $('#' + receipt.id + "sep" + idx);
                     tag.on('click', function () {
@@ -534,18 +490,6 @@
                         tagBlob += `<div id="${receipt.id + "sep" + idx}" class="tagValue">${receipt.tags[idx]}${tag_x_removal}</div>`;
                     }
                 }
-                //console.info("receipt.imagee" + receipt.image);
-
-//                if (receipt.image != null) {
-//                    var myImage = new Image();
-//                    myImage.src = receipt.image;
-//
-//                    const canvasTemp = document.createElement('canvas');
-//                    canvasTemp.id = "created" + (Math.floor(Math.random() * 9 + 2)).toString() + "end";
-//                    canvasTemp.getContext('2d').drawImage(myImage, 0, 0);
-//                    canvas = canvasTemp;
-//                }
-
 
                 console.info("receipt.merchant " + receipt.merchant);
                 console.info("canvas" + canvas);
@@ -555,20 +499,7 @@
                 //$(`<div class="receipt"><span class="time">${timeSince(receipt.time)}</span><span class="merchant">${receipt.merchant}</span><span class="amount">${parseFloat(receipt.amount).toFixed(2)}</span><span class="tags">${tagBlob}<div id="${receipt.id}" class="add-tag">Add +</div></span><span class="snap">${canvas}</span></div>`)
                     .appendTo($("#receiptList"));
 
-                //var canvas = $('<canvas width="500" height="500"></canvas>');
-               // $('#receiptList').append(canvas);
 
-
-                /// initialize
-                //if (typeof G_vmlCanvasManager !== 'undefined')
-                //    G_vmlCanvasManager.initElement(canvas[0]);
-
-//                canvas.attr({
-//                    id: elementID
-//                }).css({
-//                    width: 200 + 'px',
-//                    height: 200 + 'px'
-//                }).appendTo($("#receiptList"));
             }
 
             function removeTag(receiptId, tag) {
@@ -600,15 +531,12 @@
                 }
             }
 
-
             $(function () {
                 $('#start-camera').on('click', startVideo);
                 $('video').on('play', () => $('#take-pic').prop('disabled', false));
                 $('#take-pic').on('click', takeSnapshot);
             });
 
-            //<img src="snap.png" height="30"/>
-            // $(`<div class="table-top"><span>Time</span><span>Merchant</span><span>$</span><span>Tags</span><span>Snaps</span></div>`)
             $(`<div class="table-top"><span>Time</span><span>Merchant</span><span>$</span><span>Tags</span></div>`)
                 .appendTo($("#receiptList"))
         })
