@@ -6,57 +6,10 @@
     <style>
 
         H1 {
-            float: right;
+            float: left;
             font-family: Helvetica
         }
-        #receiptList {
-            clear: both;
-            width: 400px;
-        }
-        .receipt {
-            background-color: cornflowerblue;
-            width: 100%;
-        }
-        .receipt span {
-            margin: -1px;
-            padding: 6px;
-            text-align: center;
-            width: 80px;
-            display: inline-block;
-        }
-        .table-top {
-            background-color: deepskyblue;
-            width: 100%;
-        }
-        .table-top span {
-            margin: -1px;
-            padding: 6px;
-            text-align: center;
-            width: 80px;
-            display: inline-block;
-        }
-        .add-tag {
-            text-align: center;
 
-            border: 1px solid black;
-            cursor: pointer;
-
-            width: 10px;
-            color: white;
-            height: 30px;
-            display: inline-table;
-
-            vertical-align: middle;
-            background-color: deepskyblue;
-        }
-
-        .tag_input {
-            margin-bottom: 5px;
-            width: 70px;
-            border: 1px solid black;
-            background: inherit;
-
-        }
 
         #input-amount-ui {
             margin-top: 5px;
@@ -77,6 +30,47 @@
             color: white;
             background: inherit;
         }
+        #save-receipt {
+            text-align: center;
+
+            vertical-align: middle;
+            border-radius: 5px;
+            border: 1px solid black;
+            color: white;
+            background-color: lightgreen;
+        }
+
+        #cancel-receipt {
+            text-align: center;
+            border: 1px solid black;
+            vertical-align: middle;
+            border-radius: 5px;
+            color: white;
+            background-color: red;
+        }
+
+
+        .receipt {
+            background-color: cornflowerblue;
+            width: 100%;
+        }
+        .receipt span {
+            margin: -1px;
+            padding: 6px;
+            text-align: center;
+            width: 120px;
+            display: inline-block;
+        }
+
+        .tag_input {
+            margin-bottom: 5px;
+            width: 70px;
+            border: 1px solid black;
+            background: inherit;
+
+        }
+
+
 
         #camera-ui {
             margin-top: 5px;
@@ -121,25 +115,26 @@
             color: white;
             background-color: lightskyblue;
         }
-
-        #save-receipt {
-            text-align: center;
-
-            vertical-align: middle;
-            border-radius: 5px;
-            border: 1px solid black;
-            color: white;
-            background-color: lightgreen;
+        #receiptList {
+            clear: both;
+            width: 700px;
         }
 
-        #cancel-receipt {
-            text-align: center;
+        video {
+            width: 400px;
+            height: 400px;
             border: 1px solid black;
-            vertical-align: middle;
-            border-radius: 5px;
-            color: white;
-            background-color: red;
         }
+
+        #vidwrap {
+            margin: 20px 0;
+        }
+
+        .table-top {
+            background-color: deepskyblue;
+            width: 100%;
+        }
+
 
         #take-pic {
             text-align: center;
@@ -159,7 +154,27 @@
             color: white;
             background-color: darkblue;
         }
+        .table-top span {
+            margin: -1px;
+            padding: 6px;
+            text-align: center;
+            width: 120px;
+            display: inline-block;
+        }
+        .add-tag {
+            text-align: center;
 
+            border: 1px solid black;
+            cursor: pointer;
+
+            width: 10px;
+            color: white;
+            height: 30px;
+            display: inline-table;
+
+            vertical-align: middle;
+            background-color: deepskyblue;
+        }
         .tagValue {
             margin-bottom: 5px;
             border-radius: 50px;
@@ -173,15 +188,7 @@
             background-color: darkblue;
         }
 
-        video {
-            width: 400px;
-            height: 400px;
-            border: 1px solid black;
-        }
 
-        #vidwrap {
-            margin: 20px 0;
-        }
 
 
 
