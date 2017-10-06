@@ -209,44 +209,7 @@
             var boundingBox;
             var canvasId;
 
-            $.getJSON(receipts_restful_api, function (receipts) {
-                for (var idx = 0; idx < receipts.length; idx++) {
-                    if (receipts[idx].image != null) {
-                        let myImage = new Image();
-                        myImage.src = "data:image/png;base64," + receipts[idx].image;
-                        const canvasTemp = document.createElement('canvas');
-                        canvasTemp.id = "created" + Date.now().toString() + "populate";
 
-                        let ctx = canvasTemp.getContext('2d');
-                        myImage.onload = function() {
-                            console.log("Drawing image " + canvasTemp.id);
-                            canvasTemp.width = myImage.width;
-                            canvasTemp.height = myImage.height;
-
-                            ctx.drawImage(myImage, 0, 0);
-                        }
-                        myImage.onerror = function(err) {
-                            console.log("Something went wrong!" + err);
-                        }
-                        console.log("Created canvas " + canvasTemp.id);
-
-                        addRow(receipts[idx], canvasTemp);
-
-                    } else {
-                        addRow(receipts[idx]);
-                    }
-                }
-            });
-
-            $('#add-receipt').on('click', function () {
-                $('#camera-ui').hide();
-                $('#input-amount-ui').show();
-            });
-
-            $('#start-camera').on('click', function () {
-                $('#input-amount-ui').hide();
-                $('#camera-ui').show();
-            });
 
             $('#save-receipt').on('click', function () {
                 console.info("save-receipt ");
@@ -288,12 +251,7 @@
                 imageCapture = null;
             }
 
-            $('#take-pic-cancel').on('click', function () {
-                console.info("take-pic-cancel ");
-                $('#camera-ui').hide();
-                disconnectVideo();
-                canvasId = "";
-            });
+
             $('#cancel-receipt').on('click', function () {
                 console.info("cancel-receipt ");
                 $('#merchant').val('');
@@ -301,7 +259,16 @@
                 $('#input-amount-ui').hide();
                 canvasId = ";"
             });
+            function attachMediaStream(mediaStream) {
+                $('video')[0].srcObject = mediaStream;
+                track = mediaStream.getVideoTracks()[0];
+                imageCapture = new ImageCapture(track);
+            }
 
+            $('#add-receipt').on('click', function () {
+                $('#camera-ui').hide();
+                $('#input-amount-ui').show();
+            });
 
 
             $.put = function(url, data, callback, type){
@@ -327,6 +294,13 @@
                     tag.remove();
                 }, application_json);
             }
+
+            $('#take-pic-cancel').on('click', function () {
+                console.info("take-pic-cancel ");
+                $('#camera-ui').hide();
+                disconnectVideo();
+                canvasId = "";
+            });
             function startVideo() {
                 navigator.mediaDevices.getUserMedia({video: {facingMode: {exact: "environment"}}})
                     .then(attachMediaStream)
@@ -338,11 +312,7 @@
             })
             })
             }
-            function attachMediaStream(mediaStream) {
-                $('video')[0].srcObject = mediaStream;
-                track = mediaStream.getVideoTracks()[0];
-                imageCapture = new ImageCapture(track);
-            }
+
             function takeSnapshot() {
                 canvasId = Date.now().toString();
                 imageCapture.grabFrame()
@@ -394,6 +364,35 @@
             }
 
 
+
+            $.getJSON(receipts_restful_api, function (receipts) {
+                for (var idx = 0; idx < receipts.length; idx++) {
+                    if (receipts[idx].image != null) {
+                        let myImage = new Image();
+                        myImage.src = "data:image/png;base64," + receipts[idx].image;
+                        const canvasTemp = document.createElement('canvas');
+                        canvasTemp.id = "created" + Date.now().toString() + "populate";
+
+                        let ctx = canvasTemp.getContext('2d');
+                        myImage.onload = function() {
+                            console.log("Drawing image " + canvasTemp.id);
+                            canvasTemp.width = myImage.width;
+                            canvasTemp.height = myImage.height;
+
+                            ctx.drawImage(myImage, 0, 0);
+                        }
+                        myImage.onerror = function(err) {
+                            console.log("Something went wrong!" + err);
+                        }
+                        console.log("Created canvas " + canvasTemp.id);
+
+                        addRow(receipts[idx], canvasTemp);
+
+                    } else {
+                        addRow(receipts[idx]);
+                    }
+                }
+            });
 
 
             function addRow(receipt, canvas) {
@@ -451,6 +450,11 @@
                 });
                 possibleTag.remove();
             }
+
+            $('#start-camera').on('click', function () {
+                $('#input-amount-ui').hide();
+                $('#camera-ui').show();
+            });
 
             $(function () {
                 $('#start-camera').on('click', startVideo);
