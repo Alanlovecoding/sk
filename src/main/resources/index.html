@@ -209,6 +209,45 @@
             var boundingBox;
             var canvasId;
 
+            $.getJSON(receipts_restful_api, function (receipts) {
+                for (var idx = 0; idx < receipts.length; idx++) {
+                    if (receipts[idx].image != null) {
+                        let myImage = new Image();
+                        myImage.src = "data:image/png;base64," + receipts[idx].image;
+                        const canvasTemp = document.createElement('canvas');
+                        canvasTemp.id = "created" + Date.now().toString() + "populate";
+
+                        let ctx = canvasTemp.getContext('2d');
+                        myImage.onload = function() {
+                            console.log("Drawing image " + canvasTemp.id);
+                            canvasTemp.width = myImage.width;
+                            canvasTemp.height = myImage.height;
+
+                            ctx.drawImage(myImage, 0, 0);
+                        }
+                        myImage.onerror = function(err) {
+                            console.log("Something went wrong!" + err);
+                        }
+                        console.log("Created canvas " + canvasTemp.id);
+
+                        addRow(receipts[idx], canvasTemp);
+
+                    } else {
+                        addRow(receipts[idx]);
+                    }
+                }
+            });
+
+            $('#add-receipt').on('click', function () {
+                $('#camera-ui').hide();
+                $('#input-amount-ui').show();
+            });
+
+            $('#start-camera').on('click', function () {
+                $('#input-amount-ui').hide();
+                $('#camera-ui').show();
+            });
+
 
 
             $('#save-receipt').on('click', function () {
@@ -246,10 +285,7 @@
                 });
             });
 
-            function disconnectVideo() {
-                $('video')[0].srcObject = null;
-                imageCapture = null;
-            }
+
 
 
             $('#cancel-receipt').on('click', function () {
@@ -259,16 +295,22 @@
                 $('#input-amount-ui').hide();
                 canvasId = ";"
             });
-            function attachMediaStream(mediaStream) {
-                $('video')[0].srcObject = mediaStream;
-                track = mediaStream.getVideoTracks()[0];
-                imageCapture = new ImageCapture(track);
+
+            $('#take-pic-cancel').on('click', function () {
+                console.info("take-pic-cancel ");
+                $('#camera-ui').hide();
+                disconnectVideo();
+                canvasId = "";
+            });
+
+            function disconnectVideo() {
+                $('video')[0].srcObject = null;
+                imageCapture = null;
             }
 
-            $('#add-receipt').on('click', function () {
-                $('#camera-ui').hide();
-                $('#input-amount-ui').show();
-            });
+
+
+
 
 
             $.put = function(url, data, callback, type){
@@ -288,19 +330,17 @@
                     }
                 });
             };
-            function removeTag(receiptId, tag) {
-                console.info("removeTag " + tag);
-                $.put(tags_restful_api + "/" + tag.innerText.slice(0, -tag_x_removal.length), receiptId, function() {
-                    tag.remove();
-                }, application_json);
+
+            function attachMediaStream(mediaStream) {
+                $('video')[0].srcObject = mediaStream;
+                track = mediaStream.getVideoTracks()[0];
+                imageCapture = new ImageCapture(track);
             }
 
-            $('#take-pic-cancel').on('click', function () {
-                console.info("take-pic-cancel ");
-                $('#camera-ui').hide();
-                disconnectVideo();
-                canvasId = "";
-            });
+
+
+
+
             function startVideo() {
                 navigator.mediaDevices.getUserMedia({video: {facingMode: {exact: "environment"}}})
                     .then(attachMediaStream)
@@ -359,42 +399,6 @@
 
             }
 
-            function putTag(receipt, possibleTag, tagCount) {
-                $.put(tags_restful_api + "/" + possibleTag.val(), receipt.id, storeNewTag(receipt, tagCount, possibleTag) , application_json);
-            }
-
-
-
-            $.getJSON(receipts_restful_api, function (receipts) {
-                for (var idx = 0; idx < receipts.length; idx++) {
-                    if (receipts[idx].image != null) {
-                        let myImage = new Image();
-                        myImage.src = "data:image/png;base64," + receipts[idx].image;
-                        const canvasTemp = document.createElement('canvas');
-                        canvasTemp.id = "created" + Date.now().toString() + "populate";
-
-                        let ctx = canvasTemp.getContext('2d');
-                        myImage.onload = function() {
-                            console.log("Drawing image " + canvasTemp.id);
-                            canvasTemp.width = myImage.width;
-                            canvasTemp.height = myImage.height;
-
-                            ctx.drawImage(myImage, 0, 0);
-                        }
-                        myImage.onerror = function(err) {
-                            console.log("Something went wrong!" + err);
-                        }
-                        console.log("Created canvas " + canvasTemp.id);
-
-                        addRow(receipts[idx], canvasTemp);
-
-                    } else {
-                        addRow(receipts[idx]);
-                    }
-                }
-            });
-
-
             function addRow(receipt, canvas) {
                 var tagCount = receipt.tags.length;
                 manageTagsAndDivs(receipt, tagCount, canvas);
@@ -429,6 +433,20 @@
                 })
             }
 
+            function putTag(receipt, possibleTag, tagCount) {
+                $.put(tags_restful_api + "/" + possibleTag.val(), receipt.id, storeNewTag(receipt, tagCount, possibleTag) , application_json);
+            }
+
+            function storeNewTag(receipt, tagCount, possibleTag) {
+                var addBlob = $(`<div id="${receipt.id + "sep" + (tagCount - 1)}" class="tagValue">${possibleTag.val()}${tag_x_removal}</div>`);
+                addBlob.insertBefore(possibleTag);
+                addBlob.on('click', function () {
+                    removeTag(receipt.id, this);
+                });
+                possibleTag.remove();
+            }
+
+
             function manageTagsAndDivs(receipt, tagCount, canvas) {
                 var tagBlob = "";
                 var tagCount = receipt.tags.length;
@@ -442,19 +460,13 @@
                 $(`<div class="receipt"><span class="time">${new Date().toDateString()}</span><span class="merchant">${receipt.merchant}</span><span class="amount">${parseFloat(receipt.amount).toFixed(2)}</span><span class="tags">${tagBlob}<div id="${receipt.id}" class="add-tag">Add +</div></span></div>`).append(canvas)
                     .appendTo($("#receiptList"));
             }
-            function storeNewTag(receipt, tagCount, possibleTag) {
-                var addBlob = $(`<div id="${receipt.id + "sep" + (tagCount - 1)}" class="tagValue">${possibleTag.val()}${tag_x_removal}</div>`);
-                addBlob.insertBefore(possibleTag);
-                addBlob.on('click', function () {
-                    removeTag(receipt.id, this);
-                });
-                possibleTag.remove();
-            }
 
-            $('#start-camera').on('click', function () {
-                $('#input-amount-ui').hide();
-                $('#camera-ui').show();
-            });
+            function removeTag(receiptId, tag) {
+                console.info("removeTag " + tag);
+                $.put(tags_restful_api + "/" + tag.innerText.slice(0, -tag_x_removal.length), receiptId, function() {
+                    tag.remove();
+                }, application_json);
+            }
 
             $(function () {
                 $('#start-camera').on('click', startVideo);
